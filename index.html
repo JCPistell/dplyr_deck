@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>An Intro to dplyr</title>
+  <meta charset="utf-8">
+  <meta name="description" content="An Intro to dplyr">
+  <meta name="author" content="Colin Pistell">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/solarized_dark.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/quiz/css/demo.css"></link>
+<link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+<link rel=stylesheet href="./assets/css/cust.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>An Intro to dplyr</h1>
+    <h2>performance coding with R</h2>
+    <p>Colin Pistell<br/>MS Business Analytics 2016</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:url(./assets/img/sloth.gif);background-size:cover;">
+<hgroup>
+  
+</hgroup>
+<article class = 'flexbox vcenter'>
+<style>
+.title-slide {background:url(./assets/img/lightning.jpg);background-size: cover}
+.title-slide hgroup > h1, 
+.title-slide hgroup > h2 {
+  color: white
+}
+</style>
+
+<h1 class="emph wtxt txtcent">Your code using base R</h1>
+
+</article>
+<!-- Presenter Notes -->
+</slide>
+<slide class="" id="slide-2" style="background:url(./assets/img/cheetah.gif);background-size:cover;">
+<hgroup>
+  
+</hgroup>
+<article class = 'flexbox vcenter'>
+<h1 class="emph wtxt txtcent">Your code using dplyr</h1>
+
+</article>
+<!-- Presenter Notes -->
+</slide>
+<slide class="paper" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Libraries You&#39;ll Need Loaded</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(ggplot2)
+library(dplyr)
+library(tidyr)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Question Example</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>Interactive questions! Select your answer and hit submit to see if you&#39;re right. Hints are available as is an explanation if you get stuck. Let&#39;s try!</p>
+
+<p>What&#39;s the best part of Jurassic Park?</p>
+
+<ol>
+<li>The T-Rex</li>
+<li>The Velociraptors</li>
+<li><em>Sexy Jeff Goldblum</em></li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+mmmm.... Chaos Theory...</p>
+
+</div>
+<div class="quiz-explanation">
+  <p><img src="./assets/img/sexyjeff.jpg" alt="sexyjeff"></p>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>The Basics</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>dplyr (and tidyr) comprise a set of functions and tools to clean, reshape, subset, and aggregate data.</p>
+
+<ul>
+<li>They make working with data very easy</li>
+<li>They&#39;re also very very fast</li>
+<li>Seriously, <b>very very fast</b></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>The Philosophy</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>dplyr and tidyr both have just a few functions</li>
+<li>Each function does just one thing, but does it very well</li>
+<li>The functions all have a constrained set of options/arguments</li>
+<li>This makes the functions easy to use, but very flexible and powerful when combined</li>
+<li>Under the hood, dplyr runs in highly optimized C code.</li>
+<li>You can read more <a href="https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html">here</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>What We&#39;ll be Covering</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Subsetting with select() and filter()</li>
+<li>Adding rows with mutate()</li>
+<li>A bit of reshaping with arrange()</li>
+<li>Grouping and aggregating with group_by() and summarise()</li>
+<li>Piping (!!!)</li>
+</ul>
+
+<h2>What we sadly won&#39;t get to</h2>
+
+<ul>
+<li>dplyr&#39;s built in database connectivity (unfortunately not so good with MySQL)</li>
+<li>Window functions</li>
+<li>Joins and data set combination.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>select() and filter()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>select(dataframe, column1, column2...) selects columns from a dataframe</li>
+<li>filter(dataframe, logic test) selects rows from a dataframe based on the logical test</li>
+<li>select() works just like SELECT in SQL, filter() works just like WHERE</li>
+</ul>
+
+<p>An example:</p>
+
+<pre><code class="r">data(mtcars)
+mtcarsSelect &lt;- select(mtcars, mpg, cyl, hp, wt)
+mtcarsFilter &lt;- filter(mtcarsSelect, mpg &gt;= 20)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Practice</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>Load the iris data set. Using select() and filter(), create a new dataframe of Sepal Length and Sepal Width for only observations with a Sepal Length greater than 6.5. What is the sum of values in this new dataframe? (sum(dataframe) will work for the last step)</p>
+
+<ol>
+<li>1026.3</li>
+<li><em>304</em></li>
+<li>642</li>
+<li>3121</li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+Use select() first, then use filter() on the saved result from select. </p>
+
+</div>
+<div class="quiz-explanation">
+  <pre><code class="r">data(iris)
+iris2 &lt;- select(iris, Sepal.Length, Sepal.Width)
+iris3 &lt;- filter(iris2, Sepal.Length &gt; 6.5)
+kable(iris3)
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="right">Sepal.Length</th>
+<th align="right">Sepal.Width</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">7.0</td>
+<td align="right">3.2</td>
+</tr>
+<tr>
+<td align="right">6.9</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">6.6</td>
+<td align="right">2.9</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">6.6</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">6.8</td>
+<td align="right">2.8</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">7.1</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">7.6</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">7.3</td>
+<td align="right">2.9</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">2.5</td>
+</tr>
+<tr>
+<td align="right">7.2</td>
+<td align="right">3.6</td>
+</tr>
+<tr>
+<td align="right">6.8</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">7.7</td>
+<td align="right">3.8</td>
+</tr>
+<tr>
+<td align="right">7.7</td>
+<td align="right">2.6</td>
+</tr>
+<tr>
+<td align="right">6.9</td>
+<td align="right">3.2</td>
+</tr>
+<tr>
+<td align="right">7.7</td>
+<td align="right">2.8</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.3</td>
+</tr>
+<tr>
+<td align="right">7.2</td>
+<td align="right">3.2</td>
+</tr>
+<tr>
+<td align="right">7.2</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">7.4</td>
+<td align="right">2.8</td>
+</tr>
+<tr>
+<td align="right">7.9</td>
+<td align="right">3.8</td>
+</tr>
+<tr>
+<td align="right">7.7</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">6.9</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">6.9</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">6.8</td>
+<td align="right">3.2</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.3</td>
+</tr>
+<tr>
+<td align="right">6.7</td>
+<td align="right">3.0</td>
+</tr>
+</tbody></table>
+
+<pre><code class="r">sum(iris3)
+</code></pre>
+
+<pre><code>## [1] 304
+</code></pre>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:url(./assets/img/pipe.gif);background-size:cover;">
+<hgroup>
+  
+</hgroup>
+<article class = 'flexbox vcenter'>
+<h1 class="emph wtxt txtcent">The Magic of Pipes</h1>
+
+</article>
+<!-- Presenter Notes -->
+</slide>
+<slide class="paper" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Introducing Piping (%&gt;%)</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>dplyr&#39;s piping function is worth the install all by itself. After using it for a while you&#39;ll start to wonder why it&#39;s not a part of Base R.</p>
+
+<ul>
+<li>Essentially, piping allows you to feed the output of one function into another function</li>
+<li>This allows us to avoid messy/confusing nesting of code. Let&#39;s look at a silly example:</li>
+</ul>
+
+<p>If we wanted to bake a cake, we would want to follow these steps:</p>
+
+<pre><code>- Mix together the ingredients (eggs, butter, sugar, milk, flour)
+- Bake for 30 minutes at 300 degrees
+- Cool for 20 minutes
+- Cover in chocolate frosting
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Piping Example continued...</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In pseudo code, our cake making code would look something like this:</p>
+
+<pre><code>frost(cool(bake(mix(eggs,butter,sugar,milk,flour),min=30,deg=300),min=20),chocolate)
+</code></pre>
+
+<p>Gross. Now let&#39;s try with pipes:</p>
+
+<pre><code>(eggs, butter, sugar, milk, flour) %&gt;% mix() %&gt;% bake(min=30, deg=300) %&gt;%
+cool(min=20) %&gt;% frost(chocolate)
+</code></pre>
+
+<p>Much clearer. Let&#39;s look at our mtcars example with piping:</p>
+
+<pre><code class="r">mtcarsFilter &lt;- mtcars %&gt;% select(mpg, cyl, hp, wt) %&gt;% filter(mpg &gt;= 20)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Practice</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>Using the iris dataset, select sepal length, sepal width, and petal length, filter for sepal lengths greater than 4 but less than 5 and then find the sum of the matrix. Use piping.</p>
+
+<ol>
+<li>183.2</li>
+<li>414</li>
+<li>229.6</li>
+<li><em>207</em></li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+You want to flow from select to filter to sum. filter is going to include an &#39;&amp;&#39; operator</p>
+
+</div>
+<div class="quiz-explanation">
+  <pre><code class="r">iris %&gt;% select(Sepal.Length, 
+                Sepal.Width, 
+                Petal.Length) %&gt;% 
+    filter(Sepal.Length &gt; 4 
+           &amp; Sepal.Length &lt; 5) %&gt;% 
+    sum()
+</code></pre>
+
+<pre><code>## [1] 207
+</code></pre>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Easy Ordering With arrange()</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>We&#39;ve all experienced how ordering a vector or dataframe in R is surprisingly convoluted. Dplyr makes it much easier:</p>
+
+<ul>
+<li>arrange(dataframe, column1, column2, etc) arranges a dataframe in ascending order by column 1. Any ties are decided by column 2, etc.</li>
+<li>If you want descending order instead, simply use the desc() function on each column.</li>
+<li>Works great with piping!</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>An arrange() Example:</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">irisOrdered &lt;- iris %&gt;% select(Sepal.Length, Sepal.Width) %&gt;% 
+    filter(Sepal.Length &lt; 5) %&gt;% 
+    arrange(desc(Sepal.Length), desc(Sepal.Width))
+kable(head(irisOrdered))
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="right">Sepal.Length</th>
+<th align="right">Sepal.Width</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">4.9</td>
+<td align="right">3.6</td>
+</tr>
+<tr>
+<td align="right">4.9</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">4.9</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="right">4.9</td>
+<td align="right">3.0</td>
+</tr>
+<tr>
+<td align="right">4.9</td>
+<td align="right">2.5</td>
+</tr>
+<tr>
+<td align="right">4.9</td>
+<td align="right">2.4</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Practice</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>Using mtcars, create an ordered table of mpg, weight (wt), and horsepower (hp) for all cars with an mpg &gt; 20. Order the list by descending mpg followed by ascending wt, followed by ascending hp. What is the weight of the top entry for the first mpg tie in the table?</p>
+
+<ol>
+<li><em>1.513</em></li>
+<li>2.875</li>
+<li>1.615</li>
+<li>2.620</li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+Remember to use desc() where appropriate. Don&#39;t forget about piping!</p>
+
+</div>
+<div class="quiz-explanation">
+  <pre><code class="r">kable(mtcars %&gt;% select(mpg, wt, hp) %&gt;% 
+          filter(mpg &gt; 20) %&gt;% 
+          arrange(desc(mpg), wt, hp))
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="right">mpg</th>
+<th align="right">wt</th>
+<th align="right">hp</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">33.9</td>
+<td align="right">1.835</td>
+<td align="right">65</td>
+</tr>
+<tr>
+<td align="right">32.4</td>
+<td align="right">2.200</td>
+<td align="right">66</td>
+</tr>
+<tr>
+<td align="right">30.4</td>
+<td align="right">1.513</td>
+<td align="right">113</td>
+</tr>
+<tr>
+<td align="right">30.4</td>
+<td align="right">1.615</td>
+<td align="right">52</td>
+</tr>
+<tr>
+<td align="right">27.3</td>
+<td align="right">1.935</td>
+<td align="right">66</td>
+</tr>
+<tr>
+<td align="right">26.0</td>
+<td align="right">2.140</td>
+<td align="right">91</td>
+</tr>
+<tr>
+<td align="right">24.4</td>
+<td align="right">3.190</td>
+<td align="right">62</td>
+</tr>
+<tr>
+<td align="right">22.8</td>
+<td align="right">2.320</td>
+<td align="right">93</td>
+</tr>
+<tr>
+<td align="right">22.8</td>
+<td align="right">3.150</td>
+<td align="right">95</td>
+</tr>
+<tr>
+<td align="right">21.5</td>
+<td align="right">2.465</td>
+<td align="right">97</td>
+</tr>
+<tr>
+<td align="right">21.4</td>
+<td align="right">2.780</td>
+<td align="right">109</td>
+</tr>
+<tr>
+<td align="right">21.4</td>
+<td align="right">3.215</td>
+<td align="right">110</td>
+</tr>
+<tr>
+<td align="right">21.0</td>
+<td align="right">2.620</td>
+<td align="right">110</td>
+</tr>
+<tr>
+<td align="right">21.0</td>
+<td align="right">2.875</td>
+<td align="right">110</td>
+</tr>
+</tbody></table>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Adding New Information With mutate()</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Let&#39;s say you want to create a new column that somehow combines information in two or more columns in that row. We can use apply or a for loop to do this... or just use mutate(). An example will make things clear:</p>
+
+<pre><code class="r">data(diamonds)
+kable(head(diamonds, 6))
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="right">carat</th>
+<th align="left">cut</th>
+<th align="left">color</th>
+<th align="left">clarity</th>
+<th align="right">depth</th>
+<th align="right">table</th>
+<th align="right">price</th>
+<th align="right">x</th>
+<th align="right">y</th>
+<th align="right">z</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">0.23</td>
+<td align="left">Ideal</td>
+<td align="left">E</td>
+<td align="left">SI2</td>
+<td align="right">61.5</td>
+<td align="right">55</td>
+<td align="right">326</td>
+<td align="right">3.95</td>
+<td align="right">3.98</td>
+<td align="right">2.43</td>
+</tr>
+<tr>
+<td align="right">0.21</td>
+<td align="left">Premium</td>
+<td align="left">E</td>
+<td align="left">SI1</td>
+<td align="right">59.8</td>
+<td align="right">61</td>
+<td align="right">326</td>
+<td align="right">3.89</td>
+<td align="right">3.84</td>
+<td align="right">2.31</td>
+</tr>
+<tr>
+<td align="right">0.23</td>
+<td align="left">Good</td>
+<td align="left">E</td>
+<td align="left">VS1</td>
+<td align="right">56.9</td>
+<td align="right">65</td>
+<td align="right">327</td>
+<td align="right">4.05</td>
+<td align="right">4.07</td>
+<td align="right">2.31</td>
+</tr>
+<tr>
+<td align="right">0.29</td>
+<td align="left">Premium</td>
+<td align="left">I</td>
+<td align="left">VS2</td>
+<td align="right">62.4</td>
+<td align="right">58</td>
+<td align="right">334</td>
+<td align="right">4.20</td>
+<td align="right">4.23</td>
+<td align="right">2.63</td>
+</tr>
+<tr>
+<td align="right">0.31</td>
+<td align="left">Good</td>
+<td align="left">J</td>
+<td align="left">SI2</td>
+<td align="right">63.3</td>
+<td align="right">58</td>
+<td align="right">335</td>
+<td align="right">4.34</td>
+<td align="right">4.35</td>
+<td align="right">2.75</td>
+</tr>
+<tr>
+<td align="right">0.24</td>
+<td align="left">Very Good</td>
+<td align="left">J</td>
+<td align="left">VVS2</td>
+<td align="right">62.8</td>
+<td align="right">57</td>
+<td align="right">336</td>
+<td align="right">3.94</td>
+<td align="right">3.96</td>
+<td align="right">2.48</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>mutate() Example continued...</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Let&#39;s say we want to add a volume measure to each entry. Using mutate() makes it easy:</p>
+
+<pre><code class="r">diamonds &lt;- mutate(diamonds, volume = x * y * z)
+kable(head(diamonds, 6))
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="right">carat</th>
+<th align="left">cut</th>
+<th align="left">color</th>
+<th align="left">clarity</th>
+<th align="right">depth</th>
+<th align="right">table</th>
+<th align="right">price</th>
+<th align="right">x</th>
+<th align="right">y</th>
+<th align="right">z</th>
+<th align="right">volume</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">0.23</td>
+<td align="left">Ideal</td>
+<td align="left">E</td>
+<td align="left">SI2</td>
+<td align="right">61.5</td>
+<td align="right">55</td>
+<td align="right">326</td>
+<td align="right">3.95</td>
+<td align="right">3.98</td>
+<td align="right">2.43</td>
+<td align="right">38.20203</td>
+</tr>
+<tr>
+<td align="right">0.21</td>
+<td align="left">Premium</td>
+<td align="left">E</td>
+<td align="left">SI1</td>
+<td align="right">59.8</td>
+<td align="right">61</td>
+<td align="right">326</td>
+<td align="right">3.89</td>
+<td align="right">3.84</td>
+<td align="right">2.31</td>
+<td align="right">34.50586</td>
+</tr>
+<tr>
+<td align="right">0.23</td>
+<td align="left">Good</td>
+<td align="left">E</td>
+<td align="left">VS1</td>
+<td align="right">56.9</td>
+<td align="right">65</td>
+<td align="right">327</td>
+<td align="right">4.05</td>
+<td align="right">4.07</td>
+<td align="right">2.31</td>
+<td align="right">38.07688</td>
+</tr>
+<tr>
+<td align="right">0.29</td>
+<td align="left">Premium</td>
+<td align="left">I</td>
+<td align="left">VS2</td>
+<td align="right">62.4</td>
+<td align="right">58</td>
+<td align="right">334</td>
+<td align="right">4.20</td>
+<td align="right">4.23</td>
+<td align="right">2.63</td>
+<td align="right">46.72458</td>
+</tr>
+<tr>
+<td align="right">0.31</td>
+<td align="left">Good</td>
+<td align="left">J</td>
+<td align="left">SI2</td>
+<td align="right">63.3</td>
+<td align="right">58</td>
+<td align="right">335</td>
+<td align="right">4.34</td>
+<td align="right">4.35</td>
+<td align="right">2.75</td>
+<td align="right">51.91725</td>
+</tr>
+<tr>
+<td align="right">0.24</td>
+<td align="left">Very Good</td>
+<td align="left">J</td>
+<td align="left">VVS2</td>
+<td align="right">62.8</td>
+<td align="right">57</td>
+<td align="right">336</td>
+<td align="right">3.94</td>
+<td align="right">3.96</td>
+<td align="right">2.48</td>
+<td align="right">38.69395</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Practice</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>First, run this bit of code to add a car name column to mtcars:</p>
+
+<pre><code class="r">mtcars$cars &lt;- rownames(mtcars)
+</code></pre>
+
+<p>Let&#39;s define efficiency as mpg/horsepower. Create a table showing in descending order the most efficient cars. What&#39;s the most efficient car?</p>
+
+<ol>
+<li>Toyota Corolla</li>
+<li>Maserati Bora</li>
+<li><em>Honda Civic</em></li>
+<li>Valiant</li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+select() %&gt;% mutate %&gt;% arrange()</p>
+
+</div>
+<div class="quiz-explanation">
+  <pre><code class="r">mtcars %&gt;% select(cars, mpg, hp) %&gt;% 
+    mutate(efficiency = mpg/hp) %&gt;% 
+    arrange(desc(efficiency)) %&gt;% 
+    head(5) %&gt;% kable()
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="left">cars</th>
+<th align="right">mpg</th>
+<th align="right">hp</th>
+<th align="right">efficiency</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">Honda Civic</td>
+<td align="right">30.4</td>
+<td align="right">52</td>
+<td align="right">0.5846154</td>
+</tr>
+<tr>
+<td align="left">Toyota Corolla</td>
+<td align="right">33.9</td>
+<td align="right">65</td>
+<td align="right">0.5215385</td>
+</tr>
+<tr>
+<td align="left">Fiat 128</td>
+<td align="right">32.4</td>
+<td align="right">66</td>
+<td align="right">0.4909091</td>
+</tr>
+<tr>
+<td align="left">Fiat X1-9</td>
+<td align="right">27.3</td>
+<td align="right">66</td>
+<td align="right">0.4136364</td>
+</tr>
+<tr>
+<td align="left">Merc 240D</td>
+<td align="right">24.4</td>
+<td align="right">62</td>
+<td align="right">0.3935484</td>
+</tr>
+</tbody></table>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Grouping and Aggregating</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Let&#39;s get to the good stuff. Dplyr really starts to shine when we use it for aggregation. The syntax is easier, it&#39;s more flexible, and it&#39;s a whole lot faster than aggregate. The only downside is we have to use two steps:</p>
+
+<ul>
+<li>The first step is to use the group_by() function:</li>
+</ul>
+
+<pre><code class="r">data(iris)
+irisGroup &lt;- group_by(iris, Species)
+</code></pre>
+
+<p>One very important note is you can group by more than one variable. Here it only makes sense to use species.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>group_by continued...</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">head(irisGroup)
+</code></pre>
+
+<pre><code>## Source: local data frame [6 x 5]
+## Groups: Species [1]
+## 
+##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+##          (dbl)       (dbl)        (dbl)       (dbl)  (fctr)
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa
+</code></pre>
+
+<p>Notice that our output has changed a little. Dplyr has wrapped our dataframe with some useful information, including our Group values. It also lets us know what kind of variables are in each column. Helpful!</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Using summarise() to Aggregate</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Now we&#39;re ready to aggregate. in dplyr this is done with the summarise() function. The syntax is pretty straightforward and always follows this pattern:</p>
+
+<p>summarise(<groupedDataFrame>, <name of variable> = <FUN()>, etc. )</p>
+
+<p>For example:</p>
+
+<pre><code class="r">irisSummary &lt;- summarise(irisGroup, meanSepalLength = mean(Sepal.Length))
+kable(irisSummary)
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="left">Species</th>
+<th align="right">meanSepalLength</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">setosa</td>
+<td align="right">5.006</td>
+</tr>
+<tr>
+<td align="left">versicolor</td>
+<td align="right">5.936</td>
+</tr>
+<tr>
+<td align="left">virginica</td>
+<td align="right">6.588</td>
+</tr>
+</tbody></table>
+
+<p>Just like we can group by more than one variable we can also ask for multiple aggregation functions in each summary. </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>One Weird Thing</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>group_by() and summarise() are extremely easy to use, but there&#39;s one thing to watch out for. If you want to summarize by count you can&#39;t use length() like you do with the base aggregate function. You need to use n() with no arguments. Let&#39;s look at an example:</p>
+
+<pre><code class="r">#We can use the same grouped dataframe
+irisCount &lt;- summarise(irisGroup, Mean = mean(Sepal.Length), Count = n())
+kable(irisCount)
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="left">Species</th>
+<th align="right">Mean</th>
+<th align="right">Count</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">setosa</td>
+<td align="right">5.006</td>
+<td align="right">50</td>
+</tr>
+<tr>
+<td align="left">versicolor</td>
+<td align="right">5.936</td>
+<td align="right">50</td>
+</tr>
+<tr>
+<td align="left">virginica</td>
+<td align="right">6.588</td>
+<td align="right">50</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Practice</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>Let&#39;s do some aggregation on the diamonds dataset. Provide a count and the mean price of the diamonds, broken down by cut and color. What is the count and mean price of Ideal cut diamonds with a color of F?</p>
+
+<ol>
+<li>2331, 4324.89</li>
+<li>522, 5078.53</li>
+<li>2834, 2629.10</li>
+<li><em>3826, 3374.94</em></li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+Remember to use multiple group_bys and multiple summarises</p>
+
+</div>
+<div class="quiz-explanation">
+  <pre><code class="r">diamonds %&gt;% group_by(cut, color) %&gt;% 
+    summarise(Count = n(), 
+              meanPrice = mean(price)) %&gt;% 
+    filter(cut == &quot;Ideal&quot;) %&gt;% kable()
+</code></pre>
+
+<table><thead>
+<tr>
+<th align="left">cut</th>
+<th align="left">color</th>
+<th align="right">Count</th>
+<th align="right">meanPrice</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">D</td>
+<td align="right">2834</td>
+<td align="right">2629.095</td>
+</tr>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">E</td>
+<td align="right">3903</td>
+<td align="right">2597.550</td>
+</tr>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">F</td>
+<td align="right">3826</td>
+<td align="right">3374.939</td>
+</tr>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">G</td>
+<td align="right">4884</td>
+<td align="right">3720.706</td>
+</tr>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">H</td>
+<td align="right">3115</td>
+<td align="right">3889.335</td>
+</tr>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">I</td>
+<td align="right">2093</td>
+<td align="right">4451.970</td>
+</tr>
+<tr>
+<td align="left">Ideal</td>
+<td align="left">J</td>
+<td align="right">896</td>
+<td align="right">4918.186</td>
+</tr>
+</tbody></table>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>Prepping for the Final Challenge: ggplot</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Before I toss you into your final challenge, let&#39;s quickly review how to move past qplot() and use the full ggplot() function:</p>
+
+<ul>
+<li>You typically use ggplot in 2 steps: </li>
+<li>First, you use ggplot(data, aesthetics) to define the broad strokes of the plot</li>
+<li>Then you add geoms() to create the visuals. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-26" style="background:;">
+  <hgroup>
+    <h2>ggplot continued...</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Here&#39;s a quick example:</p>
+
+<pre><code class="r">mtcars$cyl &lt;- factor(mtcars$cyl)
+g &lt;- ggplot(data = mtcars, aes(x = wt, y = mpg, fill = cyl))
+g + geom_point(size = 4, shape = 21) + scale_fill_brewer(palette = &quot;Set2&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-27" style="background:;">
+  <hgroup>
+    <h2>geom_bar() Overview</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>By default geom_bar() (what we use to make bar graphs and histograms) only needs an x aes mapping because it wants to create bins and histograms. We can change this with the following:</li>
+</ul>
+
+<pre><code class="r">g + geom_bar(stat = &quot;identity&quot;)
+</code></pre>
+
+<p>This will make ggplot tie your x and y aes mappings together. If you map a fill color ggplot will create a stacked bar graph. You can turn this into a paired graph with the following option:</p>
+
+<pre><code class="r">g + geom_bar(position = &quot;dodge&quot;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-28" style="background:;">
+  <hgroup>
+    <h2>A Brief Tirade on Colors</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Every time you use the default color scheme in R a puppy dies somewhere in the world. For the sake of all things cute and fuzzy, use different colors.</p>
+
+<ul>
+<li>An easy approach is to install the RColorBrewer package and use the related ggplot functions:</li>
+</ul>
+
+<pre><code class="r">install.packages(&quot;RColorBrewer&quot;)
+</code></pre>
+
+<p>A nice guide to the available RColorBrewer palettes can be found <a href="https://www.nceas.ucsb.edu/%7Efrazier/RSpatialGuides/colorPaletteCheatsheet.pdf">here</a></p>
+
+<p>Your go-to functions in ggplot will be:</p>
+
+<pre><code class="r">scale_color_brewer()
+scale_fill_brewer()
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-29" style="background:;">
+  <hgroup>
+    <h2>The Final Challenge</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well paper">
+  <p>Let&#39;s put it all together. Load the ChickWeight dataset. You need to tell your boss which diet performs the best over time. Your boss is a visual person, so create a plot that tells the full story. Also, as a visual person, your boss is sensitive to color choice and will fire you if you use the default color scheme. After looking at your visualization, which diet is best?</p>
+
+<ol>
+<li>1</li>
+<li>2</li>
+<li><em>3</em></li>
+<li>4</li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p><br>
+You&#39;ll need to aggregate the data by two variables</p>
+
+</div>
+<div class="quiz-explanation">
+  <p><img src="./assets/img/chickdiet.png" alt="plot"></p>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>Deeper into Dplyr</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>We didn&#39;t cover every feature of dplyr. You should do some exploration on your own of some of its most powerful features</li>
+<li>Window functions are especially interesting and powerful. Think of them as aggregation functions that return many results rather than just one.</li>
+<li><a href="https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">This</a> is an incredibly useful cheat sheet.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>If You Need More Speed</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Dplyr is fast, but it&#39;s not the fastest kid on the block. That title belongs to data.table</li>
+<li>data.table requires you to learn a different syntax. It&#39;s not that hard, but it&#39;s a bit of work</li>
+<li>It&#39;s scary fast. The only explanation for its speed is Black Magic. Be warned...</li>
+</ul>
+
+<p><img class=imgAbsRight width=300 src='./assets/img/blackmage.png'></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='NA'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='NA'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Libraries You&#39;ll Need Loaded'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Question Example'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='The Basics'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='The Philosophy'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='What We&#39;ll be Covering'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='select() and filter()'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Practice'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='NA'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Introducing Piping (%&gt;%)'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Piping Example continued...'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Practice'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Easy Ordering With arrange()'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='An arrange() Example:'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Practice'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Adding New Information With mutate()'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='mutate() Example continued...'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Practice'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='Grouping and Aggregating'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='group_by continued...'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='Using summarise() to Aggregate'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='One Weird Thing'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='Practice'>
+         24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='Prepping for the Final Challenge: ggplot'>
+         25
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=26 title='ggplot continued...'>
+         26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='geom_bar() Overview'>
+         27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='A Brief Tirade on Colors'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='The Final Challenge'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='Deeper into Dplyr'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='If You Need More Speed'>
+         31
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/quiz/js/jquery.quiz.js"></script>
+<script src="libraries/widgets/quiz/js/mustache.min.js"></script>
+<script src="libraries/widgets/quiz/js/quiz-app.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+
+  
+  <script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

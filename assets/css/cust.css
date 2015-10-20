@@ -1,0 +1,77 @@
+.paper {
+    background-color: #eee8d5;
+}
+
+.emph {
+    text-shadow: 2px 2px 0.2em #000000;
+    font-size: 300%;
+}
+
+.txtcent {
+    text-align: center;
+}
+
+.emph2 {
+    font-size: 200%;
+}
+
+.wtxt {
+    color: #ffffff;
+}
+
+.bgtxt {
+    font-size: 1.3em;
+}
+
+.imgrw {
+    position: relative;
+    float: right;
+    margin: 10px;
+    height: auto;
+}
+
+.imgrt {
+    position: relative;
+    float: right;
+    margin: 10px;
+    width: auto;
+}
+
+.imglw {
+    position: relative;
+    float: left;
+    margin: 10px;
+    height: auto;
+}
+
+.imglt {
+    position: relative;
+    float: left;
+    margin: 10px;
+    width: auto;
+}
+
+.imgAbsRight {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    height: auto;
+}
+
+.imgAbsLeft {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    height: auto;
+}
+
+.centered {
+    margin: auto;
+    width: 80%;
+    height: auto;
+    padding: 10px;
+}
+
+.imgcent {
+    height: auto;
+}
