@@ -181,7 +181,7 @@ sum(iris3)
 ## [1] 304
 ```
 
----&vc2 bg:url(./assets/img/pipe.gif);background-size:cover
+---&vc2 bg:url(./assets/img/pipe2.gif);background-size:cover
 
 <h1 class="emph wtxt txtcent">The Magic of Pipes</h1>
 
