@@ -34,6 +34,7 @@ knit        : slidify::knit2slides
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(knitr)
 ```
 
 
