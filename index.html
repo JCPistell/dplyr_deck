@@ -189,9 +189,22 @@ mmmm.... Chaos Theory...</p>
   </hgroup>
   <article data-timings="">
     <ul>
-<li>select(dataframe, column1, column2...) selects columns from a dataframe</li>
-<li>filter(dataframe, logic test) selects rows from a dataframe based on the logical test</li>
-<li>select() works just like SELECT in SQL, filter() works just like WHERE</li>
+<li>select() selects columns from a dataframe:</li>
+</ul>
+
+<pre><code class="r">select(dataframe, column1, column2, etc)
+</code></pre>
+
+<ul>
+<li>filter() selects rows from a dataframe based on the logical test:</li>
+</ul>
+
+<pre><code class="r">filter(dataframe, column &gt; value, column &lt; value, etc)
+</code></pre>
+
+<ul>
+<li>select() works just like SELECT in SQL </li>
+<li>filter() works just like WHERE</li>
 </ul>
 
 <p>An example:</p>
@@ -489,7 +502,13 @@ You want to flow from select to filter to sum. filter is going to include an &#3
     <p>We&#39;ve all experienced how ordering a vector or dataframe in R is surprisingly convoluted. Dplyr makes it much easier:</p>
 
 <ul>
-<li>arrange(dataframe, column1, column2, etc) arranges a dataframe in ascending order by column 1. Any ties are decided by column 2, etc.</li>
+<li>arrange() arranges a dataframe in ascending order by column 1. Any ties are decided by column 2, etc.</li>
+</ul>
+
+<pre><code class="r">arrange(dataframe, column1, column2, desc(column3), etc)
+</code></pre>
+
+<ul>
 <li>If you want descending order instead, simply use the desc() function on each column.</li>
 <li>Works great with piping!</li>
 </ul>
@@ -503,10 +522,10 @@ You want to flow from select to filter to sum. filter is going to include an &#3
     <h2>An arrange() Example:</h2>
   </hgroup>
   <article data-timings="">
-    <pre><code class="r">irisOrdered &lt;- iris %&gt;% select(Sepal.Length, Sepal.Width) %&gt;% 
+    <pre><code class="r">iris %&gt;% select(Sepal.Length, Sepal.Width) %&gt;% 
     filter(Sepal.Length &lt; 5) %&gt;% 
-    arrange(desc(Sepal.Length), desc(Sepal.Width))
-kable(head(irisOrdered))
+    arrange(desc(Sepal.Length), desc(Sepal.Width)) %&gt;%
+    head() %&gt;% kable()
 </code></pre>
 
 <table><thead>
@@ -572,9 +591,10 @@ Remember to use desc() where appropriate. Don&#39;t forget about piping!</p>
 
 </div>
 <div class="quiz-explanation">
-  <pre><code class="r">kable(mtcars %&gt;% select(mpg, wt, hp) %&gt;% 
-          filter(mpg &gt; 20) %&gt;% 
-          arrange(desc(mpg), wt, hp))
+  <pre><code class="r">mtcars %&gt;% select(mpg, wt, hp) %&gt;% 
+    filter(mpg &gt; 20) %&gt;% 
+    arrange(desc(mpg), wt, hp) %&gt;% 
+    kable()
 </code></pre>
 
 <table><thead>
@@ -887,12 +907,12 @@ kable(head(diamonds, 6))
 <pre><code class="r">mtcars$cars &lt;- rownames(mtcars)
 </code></pre>
 
-<p>Let&#39;s define efficiency as mpg/horsepower. Create a table showing in descending order the most efficient cars. What&#39;s the most efficient car?</p>
+<p>Let&#39;s define efficiency as standardized mpg + standardized hp. Create a table showing in descending order the most efficient cars. What&#39;s the most efficient car?</p>
 
 <ol>
 <li>Toyota Corolla</li>
-<li>Maserati Bora</li>
-<li><em>Honda Civic</em></li>
+<li><em>Maserati Bora</em></li>
+<li>Honda Civic</li>
 <li>Valiant</li>
 </ol>
 
@@ -903,13 +923,15 @@ kable(head(diamonds, 6))
   
   <div class="quiz-hint">
   <p><br>
-select() %&gt;% mutate %&gt;% arrange()</p>
+select() %&gt;% mutate(create standardized scores) %&gt;% mutate(create final score) %&gt;% arrange()</p>
 
 </div>
 <div class="quiz-explanation">
   <pre><code class="r">mtcars %&gt;% select(cars, mpg, hp) %&gt;% 
-    mutate(efficiency = mpg/hp) %&gt;% 
-    arrange(desc(efficiency)) %&gt;% 
+    mutate(mpgz = (mpg-mean(mpg))/sd(mpg), 
+           hpz = (hp - mean(hp))/sd(hp)) %&gt;% 
+    mutate(efficiency = mpgz + hpz) %&gt;%
+    arrange(desc(efficiency)) %&gt;%
     head(5) %&gt;% kable()
 </code></pre>
 
@@ -918,38 +940,50 @@ select() %&gt;% mutate %&gt;% arrange()</p>
 <th align="left">cars</th>
 <th align="right">mpg</th>
 <th align="right">hp</th>
+<th align="right">mpgz</th>
+<th align="right">hpz</th>
 <th align="right">efficiency</th>
 </tr>
 </thead><tbody>
 <tr>
-<td align="left">Honda Civic</td>
+<td align="left">Maserati Bora</td>
+<td align="right">15.0</td>
+<td align="right">335</td>
+<td align="right">-0.8446439</td>
+<td align="right">2.7465668</td>
+<td align="right">1.9019229</td>
+</tr>
+<tr>
+<td align="left">Lotus Europa</td>
 <td align="right">30.4</td>
-<td align="right">52</td>
-<td align="right">0.5846154</td>
+<td align="right">113</td>
+<td align="right">1.7105465</td>
+<td align="right">-0.4913374</td>
+<td align="right">1.2192091</td>
 </tr>
 <tr>
 <td align="left">Toyota Corolla</td>
 <td align="right">33.9</td>
 <td align="right">65</td>
-<td align="right">0.5215385</td>
+<td align="right">2.2912716</td>
+<td align="right">-1.1914248</td>
+<td align="right">1.0998468</td>
+</tr>
+<tr>
+<td align="left">Ford Pantera L</td>
+<td align="right">15.8</td>
+<td align="right">264</td>
+<td align="right">-0.7119067</td>
+<td align="right">1.7110209</td>
+<td align="right">0.9991141</td>
 </tr>
 <tr>
 <td align="left">Fiat 128</td>
 <td align="right">32.4</td>
 <td align="right">66</td>
-<td align="right">0.4909091</td>
-</tr>
-<tr>
-<td align="left">Fiat X1-9</td>
-<td align="right">27.3</td>
-<td align="right">66</td>
-<td align="right">0.4136364</td>
-</tr>
-<tr>
-<td align="left">Merc 240D</td>
-<td align="right">24.4</td>
-<td align="right">62</td>
-<td align="right">0.3935484</td>
+<td align="right">2.0423894</td>
+<td align="right">-1.1768396</td>
+<td align="right">0.8655498</td>
 </tr>
 </tbody></table>
 
@@ -1189,7 +1223,8 @@ Remember to use multiple group_bys and multiple summarises</p>
 <ul>
 <li>You typically use ggplot in 2 steps: </li>
 <li>First, you use ggplot(data, aesthetics) to define the broad strokes of the plot</li>
-<li>Then you add geoms() to create the visuals. </li>
+<li>Then you add geoms() to create the visuals.</li>
+<li><a href="https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf">This</a> is everything you need to know in one cheat sheet.</li>
 </ul>
 
   </article>
@@ -1208,7 +1243,7 @@ g &lt;- ggplot(data = mtcars, aes(x = wt, y = mpg, fill = cyl))
 g + geom_point(size = 4, shape = 21) + scale_fill_brewer(palette = &quot;Set2&quot;)
 </code></pre>
 
-<p><img src="assets/fig/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17"> </p>
+<p><img src="assets/fig/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20"> </p>
 
   </article>
   <!-- Presenter Notes -->
@@ -1240,7 +1275,7 @@ g + geom_point(size = 4, shape = 21) + scale_fill_brewer(palette = &quot;Set2&qu
     <h2>A Brief Tirade on Colors</h2>
   </hgroup>
   <article data-timings="">
-    <p>Every time you use the default color scheme in R a puppy dies somewhere in the world. For the sake of all things cute and fuzzy, use different colors.</p>
+    <p>Every time you use the default color scheme in R somewhere in the world a puppy dies. For the sake of all things cute and fuzzy, use different colors.</p>
 
 <ul>
 <li>An easy approach is to install the RColorBrewer package and use the related ggplot functions:</li>

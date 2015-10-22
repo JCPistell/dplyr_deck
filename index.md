@@ -100,9 +100,23 @@ dplyr (and tidyr) comprise a set of functions and tools to clean, reshape, subse
 
 ## select() and filter()
 
-- select(dataframe, column1, column2...) selects columns from a dataframe
-- filter(dataframe, logic test) selects rows from a dataframe based on the logical test
-- select() works just like SELECT in SQL, filter() works just like WHERE
+
+- select() selects columns from a dataframe:
+
+
+```r
+select(dataframe, column1, column2, etc)
+```
+
+- filter() selects rows from a dataframe based on the logical test:
+
+
+```r
+filter(dataframe, column > value, column < value, etc)
+```
+
+- select() works just like SELECT in SQL 
+- filter() works just like WHERE
 
 An example:
 
@@ -260,7 +274,13 @@ iris %>% select(Sepal.Length,
 
 We've all experienced how ordering a vector or dataframe in R is surprisingly convoluted. Dplyr makes it much easier:
 
-- arrange(dataframe, column1, column2, etc) arranges a dataframe in ascending order by column 1. Any ties are decided by column 2, etc.
+- arrange() arranges a dataframe in ascending order by column 1. Any ties are decided by column 2, etc.
+
+
+```r
+arrange(dataframe, column1, column2, desc(column3), etc)
+```
+
 - If you want descending order instead, simply use the desc() function on each column.
 - Works great with piping!
 
@@ -270,10 +290,10 @@ We've all experienced how ordering a vector or dataframe in R is surprisingly co
 
 
 ```r
-irisOrdered <- iris %>% select(Sepal.Length, Sepal.Width) %>% 
+iris %>% select(Sepal.Length, Sepal.Width) %>% 
     filter(Sepal.Length < 5) %>% 
-    arrange(desc(Sepal.Length), desc(Sepal.Width))
-kable(head(irisOrdered))
+    arrange(desc(Sepal.Length), desc(Sepal.Width)) %>%
+    head() %>% kable()
 ```
 
 
@@ -306,9 +326,10 @@ Remember to use desc() where appropriate. Don't forget about piping!
 
 
 ```r
-kable(mtcars %>% select(mpg, wt, hp) %>% 
-          filter(mpg > 20) %>% 
-          arrange(desc(mpg), wt, hp))
+mtcars %>% select(mpg, wt, hp) %>% 
+    filter(mpg > 20) %>% 
+    arrange(desc(mpg), wt, hp) %>% 
+    kable()
 ```
 
 
@@ -387,36 +408,38 @@ First, run this bit of code to add a car name column to mtcars:
 mtcars$cars <- rownames(mtcars)
 ```
 
-Let's define efficiency as mpg/horsepower. Create a table showing in descending order the most efficient cars. What's the most efficient car?
+Let's define efficiency as standardized mpg + standardized hp. Create a table showing in descending order the most efficient cars. What's the most efficient car?
 
 1. Toyota Corolla
-2. Maserati Bora
-3. _Honda Civic_
+2. _Maserati Bora_
+3. Honda Civic
 4. Valiant
 
 *** .hint
 <br>
-select() %>% mutate %>% arrange()
+select() %>% mutate(create standardized scores) %>% mutate(create final score) %>% arrange()
 
 *** .explanation
 
 
 ```r
 mtcars %>% select(cars, mpg, hp) %>% 
-    mutate(efficiency = mpg/hp) %>% 
-    arrange(desc(efficiency)) %>% 
+    mutate(mpgz = (mpg-mean(mpg))/sd(mpg), 
+           hpz = (hp - mean(hp))/sd(hp)) %>% 
+    mutate(efficiency = mpgz + hpz) %>%
+    arrange(desc(efficiency)) %>%
     head(5) %>% kable()
 ```
 
 
 
-|cars           |  mpg| hp| efficiency|
-|:--------------|----:|--:|----------:|
-|Honda Civic    | 30.4| 52|  0.5846154|
-|Toyota Corolla | 33.9| 65|  0.5215385|
-|Fiat 128       | 32.4| 66|  0.4909091|
-|Fiat X1-9      | 27.3| 66|  0.4136364|
-|Merc 240D      | 24.4| 62|  0.3935484|
+|cars           |  mpg|  hp|       mpgz|        hpz| efficiency|
+|:--------------|----:|---:|----------:|----------:|----------:|
+|Maserati Bora  | 15.0| 335| -0.8446439|  2.7465668|  1.9019229|
+|Lotus Europa   | 30.4| 113|  1.7105465| -0.4913374|  1.2192091|
+|Toyota Corolla | 33.9|  65|  2.2912716| -1.1914248|  1.0998468|
+|Ford Pantera L | 15.8| 264| -0.7119067|  1.7110209|  0.9991141|
+|Fiat 128       | 32.4|  66|  2.0423894| -1.1768396|  0.8655498|
 
 ---.paper
 
@@ -551,7 +574,8 @@ Before I toss you into your final challenge, let's quickly review how to move pa
 
 - You typically use ggplot in 2 steps: 
 - First, you use ggplot(data, aesthetics) to define the broad strokes of the plot
-- Then you add geoms() to create the visuals. 
+- Then you add geoms() to create the visuals.
+- [This](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) is everything you need to know in one cheat sheet.
 
 ---.paper
 
@@ -566,7 +590,7 @@ g <- ggplot(data = mtcars, aes(x = wt, y = mpg, fill = cyl))
 g + geom_point(size = 4, shape = 21) + scale_fill_brewer(palette = "Set2")
 ```
 
-![plot of chunk unnamed-chunk-17](assets/fig/unnamed-chunk-17-1.png) 
+![plot of chunk unnamed-chunk-20](assets/fig/unnamed-chunk-20-1.png) 
 
 ---.paper
 
@@ -590,7 +614,7 @@ g + geom_bar(position = "dodge")
 
 ## A Brief Tirade on Colors
 
-Every time you use the default color scheme in R a puppy dies somewhere in the world. For the sake of all things cute and fuzzy, use different colors.
+Every time you use the default color scheme in R somewhere in the world a puppy dies. For the sake of all things cute and fuzzy, use different colors.
 - An easy approach is to install the RColorBrewer package and use the related ggplot functions:
 
 
