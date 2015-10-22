@@ -83,6 +83,8 @@ library(tidyr)
 library(knitr)
 </code></pre>
 
+<p>Knitr is used for the kable() function which creates nice looking tables in html and latex. It&#39;s not necessary if you&#39;re working in the console, but very useful if you start using Rmarkdown.</p>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -1048,7 +1050,8 @@ irisGroup &lt;- group_by(iris, Species)
   <article data-timings="">
     <p>Now we&#39;re ready to aggregate. in dplyr this is done with the summarise() function. The syntax is pretty straightforward and always follows this pattern:</p>
 
-<p>summarise(<groupedDataFrame>, <name of variable> = <FUN()>, etc. )</p>
+<pre><code class="r">summarise(groupedDataFrame, variable = FUN(), etc.)
+</code></pre>
 
 <p>For example:</p>
 
@@ -1243,7 +1246,7 @@ g &lt;- ggplot(data = mtcars, aes(x = wt, y = mpg, fill = cyl))
 g + geom_point(size = 4, shape = 21) + scale_fill_brewer(palette = &quot;Set2&quot;)
 </code></pre>
 
-<p><img src="assets/fig/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20"> </p>
+<p><img src="assets/fig/unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21"> </p>
 
   </article>
   <!-- Presenter Notes -->
@@ -1358,6 +1361,17 @@ You&#39;ll need to aggregate the data by two variables</p>
 </ul>
 
 <p><img class=imgAbsRight width=300 src='./assets/img/blackmage.png'></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="paper" id="slide-32" style="background:;">
+  <hgroup>
+    <h2>Thank you!</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Dplyr is a great tool and will make a lot of your data wrangling easier. If you have any questions please let me know! Happy coding!</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -1551,6 +1565,12 @@ You&#39;ll need to aggregate the data by two variables</p>
       <a href="#" target="_self" rel='tooltip' 
         data-slide=31 title='If You Need More Speed'>
          31
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=32 title='Thank you!'>
+         32
       </a>
     </li>
   </ul>

@@ -37,6 +37,7 @@ library(tidyr)
 library(knitr)
 ```
 
+Knitr is used for the kable() function which creates nice looking tables in html and latex. It's not necessary if you're working in the console, but very useful if you start using Rmarkdown.
 
 ---.paper &radio
 
@@ -488,7 +489,10 @@ Notice that our output has changed a little. Dplyr has wrapped our dataframe wit
 
 Now we're ready to aggregate. in dplyr this is done with the summarise() function. The syntax is pretty straightforward and always follows this pattern:
 
-summarise(<groupedDataFrame>, <name of variable> = <FUN()>, etc. )
+
+```r
+summarise(groupedDataFrame, variable = FUN(), etc.)
+```
 
 For example:
 
@@ -590,7 +594,7 @@ g <- ggplot(data = mtcars, aes(x = wt, y = mpg, fill = cyl))
 g + geom_point(size = 4, shape = 21) + scale_fill_brewer(palette = "Set2")
 ```
 
-![plot of chunk unnamed-chunk-20](assets/fig/unnamed-chunk-20-1.png) 
+![plot of chunk unnamed-chunk-21](assets/fig/unnamed-chunk-21-1.png) 
 
 ---.paper
 
@@ -668,4 +672,12 @@ You'll need to aggregate the data by two variables
 - It's scary fast. The only explanation for its speed is Black Magic. Be warned...
 
 <img class=imgAbsRight width=300 src='./assets/img/blackmage.png'>
+
+---.paper
+
+## Thank you!
+
+Dplyr is a great tool and will make a lot of your data wrangling easier. If you have any questions please let me know! Happy coding!
+
+
 
