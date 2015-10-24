@@ -86,7 +86,7 @@ dplyr (and tidyr) comprise a set of functions and tools to clean, reshape, subse
 ## What We'll be Covering
 
 - Subsetting with select() and filter()
-- Adding rows with mutate()
+- Calculating new columns with mutate()
 - A bit of reshaping with arrange()
 - Grouping and aggregating with group_by() and summarise()
 - Piping (!!!)
@@ -113,7 +113,7 @@ select(dataframe, column1, column2, etc)
 
 
 ```r
-filter(dataframe, column > value, column < value, etc)
+filter(dataframe, column > value & column < value, etc)
 ```
 
 - select() works just like SELECT in SQL 
