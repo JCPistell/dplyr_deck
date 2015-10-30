@@ -96,6 +96,10 @@ dplyr (and tidyr) comprise a set of functions and tools to clean, reshape, subse
 - Window functions
 - Joins and data set combination.
 
+---&vc2 bg:url(./assets/img/vaderyoda.jpg);background-position:center;background-size:cover
+
+<h1 class="emph wtxt txtcent">The quick and easy path?</h1>
+
 ---.paper
 
 ## select() and filter()
